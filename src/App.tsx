@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as esbuild from "esbuild-wasm";
 import { unpkgPathPlugin } from "./plugins/unpkg-path-plugin";
 import { fetchPlugin } from "./plugins/fetch-plugin";
+import CodeEditor from "./components/code-editor";
 
 const App = () => {
   const ref = useRef<any>();
@@ -63,7 +64,11 @@ const App = () => {
 
   return (
     <div>
-      <textarea onChange={(e) => setInput(e.target.value)} value={input} />
+      <CodeEditor
+        onChange={(value) => setInput(value)}
+        initialValue="//code below"
+      />
+      {/*<textarea onChange={(e) => setInput(e.target.value)} value={input} />*/}
       <div>
         <button onClick={onClick}>Submit</button>
       </div>
