@@ -3,6 +3,7 @@ import "./preview.css";
 
 interface PreviewProps {
   code: string;
+  err: string;
 }
 
 const html = `
@@ -11,21 +12,28 @@ const html = `
       <body>
         <div id="root"></div>
         <script>
-            window.addEventListener('message', (event) => {
-              try {
-                eval(event.data)
-              } catch (error) {
-                const root = document.querySelector('#root');
-                root.innerHTML = '<div style="color: red;"><h4>Runtime error</h4>' + error + '</div>';
-                console.error(error);
-              }
-            }, false)
+          const handleError = (error) => {
+            const root = document.querySelector('#root');
+            root.innerHTML = '<div style="color: red;"><h4>Runtime error</h4>' + error + '</div>';
+            console.error(error);
+          };
+          window.addEventListener('error', (event) => {
+            event.preventDefault();
+            handleError(event.error)
+          })
+          window.addEventListener('message', (event) => {
+            try {
+              eval(event.data)
+            } catch (err) {
+              handleError(err)
+            }
+          }, false)
         </script>
       </body>
   </html>
   `;
 
-const Preview: React.FC<PreviewProps> = ({ code }) => {
+const Preview: React.FC<PreviewProps> = ({ code, err }) => {
   const iframe = useRef<any>();
 
   useEffect(() => {
@@ -43,6 +51,7 @@ const Preview: React.FC<PreviewProps> = ({ code }) => {
         srcDoc={html}
         sandbox="allow-scripts"
       />
+      {err && <div className="preview-error">{err}</div>}
     </div>
   );
 };
